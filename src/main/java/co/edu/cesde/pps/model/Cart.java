@@ -164,19 +164,5 @@ public class Cart {
 
     // toString sin navegación a objetos relacionados (solo IDs y tamaño de colección)
 
-    @Override
-    public String toString() {
-        return "Cart{" +
-                "cartId=" + cartId +
-                ", userId=" + (user != null ? user.getUserId() : null) +
-                ", sessionId=" + (session != null ? session.getSessionId() : null) +
-                ", status=" + status +
-                ", isGuest=" + isGuestCart() +
-                ", isOpen=" + isOpen() +
-                ", itemsCount=" + (items != null ? items.size() : 0) +
-                ", total=" + calculateTotal() +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
-    }
+
 }
