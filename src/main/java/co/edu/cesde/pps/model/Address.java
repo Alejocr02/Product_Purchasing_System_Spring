@@ -6,34 +6,30 @@ import lombok.*;
 import java.util.Objects;
 
 /**
- * Entidad Address - Representa direcciones de envío y/o facturación de un usuario.
+ * Entidad Address - Direcciones del usuario (envío y facturación).
  *
- * Un usuario puede tener múltiples direcciones (ej: casa, oficina).
- * Cada dirección tiene un tipo: SHIPPING (envío) o BILLING (facturación).
+ * Almacena direcciones físicas para propósitos de entrega y facturación.
  *
  * Campos:
  * - addressId: Identificador único de la dirección (PK)
- * - user: Usuario propietario de la dirección (N:1 con User)
+ * - user: Usuario propietario (N:1 con User)
  * - type: Tipo de dirección (SHIPPING o BILLING)
- * - line1: Línea 1 de dirección (calle, número)
- * - line2: Línea 2 de dirección (apartamento, piso) - opcional
+ * - line1: Línea 1 de dirección (calle principal)
+ * - line2: Línea 2 de dirección (apartamento, oficina - NULLABLE)
  * - city: Ciudad
- * - state: Estado/Departamento/Provincia
+ * - state: Estado/departamento
  * - country: País
  * - postalCode: Código postal
  * - isDefault: Indica si es la dirección por defecto del usuario
  *
  * Relaciones:
  * - N:1 con User (muchas direcciones pertenecen a un usuario)
- * - 1:N con Order (como shipping_address_id o billing_address_id)
  */
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 public class Address {
 
     private Long addressId;
@@ -45,34 +41,10 @@ public class Address {
     private String state;
     private String country;
     private String postalCode;
-    private Boolean isDefault;
+    @Builder.Default
+    private Boolean isDefault = false;
 
-    // Constructor con campos obligatorios
-    public Address(User user, AddressType type, String line1, String city,
-                   String state, String country, String postalCode) {
-        this.user = user;
-        this.type = type;
-        this.line1 = line1;
-        this.city = city;
-        this.state = state;
-        this.country = country;
-        this.postalCode = postalCode;
-        this.isDefault = false;
-    }
-
-    // Constructor completo (excepto ID autogenerado)
-    public Address(User user, AddressType type, String line1, String line2,
-                   String city, String state, String country, String postalCode, Boolean isDefault) {
-        this.user = user;
-        this.type = type;
-        this.line1 = line1;
-        this.line2 = line2;
-        this.city = city;
-        this.state = state;
-        this.country = country;
-        this.postalCode = postalCode;
-        this.isDefault = isDefault != null ? isDefault : false;
-    }
+    // equals y hashCode basados en ID
 
     @Override
     public boolean equals(Object o) {
@@ -87,4 +59,21 @@ public class Address {
         return Objects.hash(addressId);
     }
 
+    // toString personalizado sin navegación a objetos relacionados (solo IDs)
+
+    @Override
+    public String toString() {
+        return "Address{" +
+                "addressId=" + addressId +
+                ", userId=" + (user != null ? user.getUserId() : null) +
+                ", type=" + type +
+                ", line1='" + line1 + '\'' +
+                ", line2='" + line2 + '\'' +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
+                ", country='" + country + '\'' +
+                ", postalCode='" + postalCode + '\'' +
+                ", isDefault=" + isDefault +
+                '}';
+    }
 }
