@@ -15,26 +15,18 @@ import java.util.Objects;
  *
  * Relaciones (futuro - etapa02):
  * - 1:N con Order (un estado puede aplicar a múltiples órdenes)
+ *
+ * Refactorizado con Lombok en Etapa 07 para eliminar boilerplate.
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
 public class OrderStatus {
 
     private Long orderStatusId;
     private String name;
-
-
-
-    // Constructor con campos obligatorios
-    public OrderStatus(String name) {
-        this.name = name;
-    }
-
-
 
     // equals y hashCode basados en ID
 
@@ -51,7 +43,7 @@ public class OrderStatus {
         return Objects.hash(orderStatusId);
     }
 
-    // toString sin navegación a objetos relacionados
+    // toString personalizado sin navegación a objetos relacionados
 
     @Override
     public String toString() {
