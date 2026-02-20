@@ -49,6 +49,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class Order {
 
     private Long orderId;
@@ -57,20 +58,34 @@ public class Order {
     private Long orderStatusId;
     private Long shippingAddressId;
     private Long billingAddressId;
-    @Builder.Default
-    private BigDecimal subtotal = BigDecimal.ZERO;
-    @Builder.Default
-    private BigDecimal tax = BigDecimal.ZERO;
-    @Builder.Default
-    private BigDecimal shippingCost = BigDecimal.ZERO;
-    @Builder.Default
-    private BigDecimal total = BigDecimal.ZERO;
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private BigDecimal subtotal;
+    private BigDecimal tax;
+    private BigDecimal shippingCost;
+    private BigDecimal total;
+    private LocalDateTime createdAt;
 
     // Colección para relación 1:N con OrderItem
-    @Builder.Default
-    private List<OrderItem> items = new ArrayList<>();
+    private List<OrderItem> items;
+
+    // Constructor con campos obligatorios
+    public Order(String orderNumber, Long userId, Long orderStatusId,
+                 Long shippingAddressId, Long billingAddressId) {
+        this.orderNumber = orderNumber;
+        this.userId = userId;
+        this.orderStatusId = orderStatusId;
+        this.shippingAddressId = shippingAddressId;
+        this.billingAddressId = billingAddressId;
+        this.subtotal = BigDecimal.ZERO;
+        this.tax = BigDecimal.ZERO;
+        this.shippingCost = BigDecimal.ZERO;
+        this.total = BigDecimal.ZERO;
+        this.createdAt = LocalDateTime.now();
+        this.items = new ArrayList<>();
+    }
+
+    // Constructor completo (excepto ID y timestamp autogenerado)
+
+    // Getters y Setters
 
     // Setters personalizados con validación (override de Lombok)
 
@@ -114,7 +129,7 @@ public class Order {
         return Objects.hash(orderId);
     }
 
-    // toString personalizado sin navegación a objetos relacionados (solo IDs y tamaño de colección)
+    // toString sin navegación a objetos relacionados (solo IDs y tamaño de colección)
 
     @Override
     public String toString() {
