@@ -21,10 +21,20 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class PaymentMethod {
 
     private Long paymentMethodId;
     private String name;
+
+    // Constructor vacío (requerido para JPA futuro)
+
+    // Constructor con campos obligatorios
+    public PaymentMethod(String name) {
+        this.name = name;
+    }
+
+    // Getters y Setters
 
     // equals y hashCode basados en ID
 
@@ -41,7 +51,7 @@ public class PaymentMethod {
         return Objects.hash(paymentMethodId);
     }
 
-    // toString personalizado sin navegación a objetos relacionados
+    // toString sin navegación a objetos relacionados
 
     @Override
     public String toString() {
