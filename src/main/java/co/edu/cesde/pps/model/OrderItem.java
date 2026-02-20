@@ -5,44 +5,38 @@ import co.edu.cesde.pps.util.ValidationUtils;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 /**
- * Entidad Order - Representa una compra finalizada (pedido/orden).
+ * Entidad OrderItem - Detalle de productos comprados en una orden.
  *
- * Una orden se crea cuando el usuario completa el checkout.
- * El checkout REQUIERE que el usuario esté registrado (userId NOT NULL).
+ * Representa un producto incluido en una orden con su cantidad y precio histórico.
  *
  * Campos:
- * - orderId: Identificador único de la orden (PK)
- * - orderNumber: Número de orden único (UNIQUE) - para tracking y referencia
- * - userId: Usuario que realizó la compra (FK a User) - NOT NULL
- * - orderStatusId: Estado actual de la orden (FK a OrderStatus)
- * - shippingAddressId: Dirección de envío (FK a Address)
- * - billingAddressId: Dirección de facturación (FK a Address)
- * - subtotal: Suma de precios de items antes de impuestos/envío (BigDecimal)
- * - tax: Impuestos aplicados (BigDecimal)
- * - shippingCost: Costo de envío (BigDecimal)
- * - total: Total final de la orden (subtotal + tax + shippingCost)
- * - createdAt: Fecha de creación de la orden
+ * - orderItemId: Identificador único del item (PK)
+ * - order: Orden a la que pertenece (N:1 con Order)
+ * - product: Producto comprado (N:1 con Product)
+ * - quantity: Cantidad comprada
+ * - unitPrice: Precio unitario al momento de la compra (histórico)
+ * - lineTotal: Total de la línea (unitPrice * quantity)
  *
- * Consideraciones de diseño:
- * - userId es obligatorio: los invitados deben registrarse antes del checkout
- * - Se guardan totales (subtotal, tax, shippingCost, total) para auditoría
- * - orderNumber único facilita búsqueda y tracking por parte del usuario
- * - Direcciones de envío y facturación pueden ser diferentes
- * - BigDecimal en todos los campos monetarios para precisión
+ * Restricción UNIQUE (order, product):
+ * Un producto no puede aparecer duplicado en la misma orden. Si el usuario
+ * compra el mismo producto dos veces en checkout, debe consolidarse en un
+ * solo OrderItem con cantidad sumada.
  *
- * Relaciones (futuro - etapa02):
- * - N:1 con User (una orden pertenece a un usuario)
- * - N:1 con OrderStatus (estado actual)
- * - N:1 con Address (shipping_address_id)
- * - N:1 con Address (billing_address_id)
- * - 1:N con OrderItem (items de la orden)
- * - 1:N con Payment (pagos asociados, puede haber reintentos)
+ * Congelación de precio (unitPrice):
+ * Se guarda el precio del producto en el momento de crear la orden.
+ * Esto es crucial para auditoría y reportes históricos, ya que los precios
+ * de productos pueden cambiar con el tiempo.
+ *
+ * lineTotal:
+ * Se puede calcular (unitPrice * quantity) o guardar para optimización.
+ * Guardarlo facilita consultas y reportes sin recalcular.
+ *
+ * Relaciones:
+ * - N:1 con Order (muchos items pertenecen a una orden)
+ * - N:1 con Product (muchos items referencian a un producto)
  */
 @Getter
 @Setter
@@ -50,68 +44,54 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 
-public class Order {
+public class OrderItem {
 
-    private Long orderId;
-    private String orderNumber;
-    private Long userId; // NOT NULL - checkout requiere usuario registrado
-    private Long orderStatusId;
-    private Long shippingAddressId;
-    private Long billingAddressId;
-    private BigDecimal subtotal;
-    private BigDecimal tax;
-    private BigDecimal shippingCost;
-    private BigDecimal total;
-    private LocalDateTime createdAt;
+    private Long orderItemId;
+    private Order order;
+    private Product product;
+    private Integer quantity;
+    private BigDecimal unitPrice;
+    private BigDecimal lineTotal;
 
-    // Colección para relación 1:N con OrderItem
-    private List<OrderItem> items;
+    // Constructor vacío (requerido para JPA futuro)
 
-    // Constructor con campos obligatorios
-    public Order(String orderNumber, Long userId, Long orderStatusId,
-                 Long shippingAddressId, Long billingAddressId) {
-        this.orderNumber = orderNumber;
-        this.userId = userId;
-        this.orderStatusId = orderStatusId;
-        this.shippingAddressId = shippingAddressId;
-        this.billingAddressId = billingAddressId;
-        this.subtotal = BigDecimal.ZERO;
-        this.tax = BigDecimal.ZERO;
-        this.shippingCost = BigDecimal.ZERO;
-        this.total = BigDecimal.ZERO;
-        this.createdAt = LocalDateTime.now();
-        this.items = new ArrayList<>();
+    // Constructor con campos obligatorios (lineTotal se calcula)
+    public OrderItem(Order order, Product product, Integer quantity, BigDecimal unitPrice) {
+        this.order = order;
+        this.product = product;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+        this.lineTotal = calculateLineTotal();
     }
 
-    // Constructor completo (excepto ID y timestamp autogenerado)
+    // Constructor completo (excepto ID autogenerado)
 
     // Getters y Setters
 
     // Setters personalizados con validación (override de Lombok)
 
-    public void setSubtotal(BigDecimal subtotal) {
-        ValidationUtils.validateNonNegative(subtotal, "subtotal");
-        this.subtotal = subtotal;
+    public void setQuantity(Integer quantity) {
+        ValidationUtils.validatePositive(quantity, "quantity");
+        this.quantity = quantity;
+        // Recalcular lineTotal al cambiar quantity
+        this.lineTotal = calculateLineTotal();
     }
 
-    public void setTax(BigDecimal tax) {
-        ValidationUtils.validateNonNegative(tax, "tax");
-        this.tax = tax;
+    public void setUnitPrice(BigDecimal unitPrice) {
+        ValidationUtils.validateNonNegative(unitPrice, "unitPrice");
+        this.unitPrice = unitPrice;
+        // Recalcular lineTotal al cambiar unitPrice
+        this.lineTotal = calculateLineTotal();
     }
 
-    public void setShippingCost(BigDecimal shippingCost) {
-        ValidationUtils.validateNonNegative(shippingCost, "shippingCost");
-        this.shippingCost = shippingCost;
+    public void setLineTotal(BigDecimal lineTotal) {
+        ValidationUtils.validateNonNegative(lineTotal, "lineTotal");
+        this.lineTotal = lineTotal;
     }
 
-    public void setTotal(BigDecimal total) {
-        ValidationUtils.validateNonNegative(total, "total");
-        this.total = total;
-    }
-
-    // Método helper para calcular total automáticamente
-    public BigDecimal calculateTotal() {
-        return CalculationUtils.calculateOrderTotal(subtotal, tax, shippingCost);
+    // Método helper para calcular total de la línea
+    public BigDecimal calculateLineTotal() {
+        return CalculationUtils.calculateOrderItemLineTotal(unitPrice, quantity);
     }
 
     // equals y hashCode basados en ID
@@ -120,31 +100,26 @@ public class Order {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Order order = (Order) o;
-        return Objects.equals(orderId, order.orderId);
+        OrderItem orderItem = (OrderItem) o;
+        return Objects.equals(orderItemId, orderItem.orderItemId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(orderId);
+        return Objects.hash(orderItemId);
     }
 
-    // toString sin navegación a objetos relacionados (solo IDs y tamaño de colección)
+    // toString sin navegación a objetos relacionados (solo IDs)
 
     @Override
     public String toString() {
-        return "Order{" +
-                "orderId=" + orderId +
-                ", orderNumber='" + orderNumber + '\'' +
-                ", userId=" + userId +
-                ", orderStatusId=" + orderStatusId +
-                ", shippingAddressId=" + shippingAddressId +
-                ", billingAddressId=" + billingAddressId +
-                ", subtotal=" + subtotal +
-                ", tax=" + tax +
-                ", shippingCost=" + shippingCost +
-                ", total=" + total +
-                ", createdAt=" + createdAt +
+        return "OrderItem{" +
+                "orderItemId=" + orderItemId +
+                ", orderId=" + (order != null ? order.getOrderId() : null) +
+                ", productId=" + (product != null ? product.getProductId() : null) +
+                ", quantity=" + quantity +
+                ", unitPrice=" + unitPrice +
+                ", lineTotal=" + lineTotal +
                 '}';
     }
 }
