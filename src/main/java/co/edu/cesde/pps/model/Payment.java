@@ -43,6 +43,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class Payment {
 
     private Long paymentId;
@@ -53,6 +54,23 @@ public class Payment {
     private Currency currency;
     private String providerReference;
     private LocalDateTime paidAt;
+
+    // Constructor vacío (requerido para JPA futuro)
+
+    // Constructor con campos obligatorios (paidAt NULL para pending)
+    public Payment(Order order, PaymentMethod paymentMethod, PaymentStatus paymentStatus,
+                   BigDecimal amount, Currency currency) {
+        this.order = order;
+        this.paymentMethod = paymentMethod;
+        this.paymentStatus = paymentStatus;
+        this.amount = amount;
+        this.currency = currency;
+        this.paidAt = null; // Se establece cuando el pago se completa
+    }
+
+    // Constructor completo (excepto ID autogenerado)
+
+    // Getters y Setters
 
     // Setter personalizado con validación (override de Lombok)
 
@@ -87,7 +105,7 @@ public class Payment {
         return Objects.hash(paymentId);
     }
 
-    // toString personalizado sin navegación a objetos relacionados (solo IDs)
+    // toString sin navegación a objetos relacionados (solo IDs)
 
     @Override
     public String toString() {
