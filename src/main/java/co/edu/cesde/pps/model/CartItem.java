@@ -39,6 +39,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class CartItem {
 
     private Long cartItemId;
@@ -47,6 +48,19 @@ public class CartItem {
     private Integer quantity;
     private BigDecimal unitPrice;
     private LocalDateTime addedAt;
+
+    // Constructor con campos obligatorios
+    public CartItem(Cart cart, Product product, Integer quantity, BigDecimal unitPrice) {
+        this.cart = cart;
+        this.product = product;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+        this.addedAt = LocalDateTime.now();
+    }
+
+    // Constructor completo (excepto ID y timestamp autogenerado)
+
+    // Getters y Setters
 
     // Setters personalizados con validación (override de Lombok)
 
@@ -80,7 +94,7 @@ public class CartItem {
         return Objects.hash(cartItemId);
     }
 
-    // toString personalizado sin navegación a objetos relacionados (solo IDs)
+    // toString sin navegación a objetos relacionados (solo IDs)
 
     @Override
     public String toString() {
