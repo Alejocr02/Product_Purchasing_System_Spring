@@ -33,6 +33,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class Category {
 
     private Long categoryId;
@@ -41,10 +42,15 @@ public class Category {
     private String slug;
 
     // Colecciones para relaciones 1:N
-    @Builder.Default
-    private List<Category> subcategories = new ArrayList<>();
-    @Builder.Default
-    private List<Product> products = new ArrayList<>();
+    private List<Category> subcategories;
+    private List<Product> products;
+
+    // Constructor vacío (requerido para JPA futuro)
+    // Constructor para categoría raíz (sin parent)
+
+    // Constructor para subcategoría (con parent)
+
+    // Getters y Setters
 
     // Métodos helper de consulta (sin efectos secundarios)
 
@@ -70,7 +76,7 @@ public class Category {
         return Objects.hash(categoryId);
     }
 
-    // toString personalizado sin navegación a objetos relacionados (solo IDs y tamaño de colecciones)
+    // toString sin navegación a objetos relacionados (solo IDs y tamaño de colecciones)
 
     @Override
     public String toString() {
