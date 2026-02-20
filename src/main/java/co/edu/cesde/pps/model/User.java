@@ -41,6 +41,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class User {
 
     private Long userId;
@@ -50,14 +51,29 @@ public class User {
     private String firstName;
     private String lastName;
     private String phone;
-    @Builder.Default
-    private UserStatus status = UserStatus.ACTIVE;
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private UserStatus status;
+    private LocalDateTime createdAt;
 
     // Colecciones para relaciones 1:N
-    @Builder.Default
-    private List<Address> addresses = new ArrayList<>();
+    private List<Address> addresses;
+
+    // Constructor vacío (requerido para JPA futuro)
+
+    // Constructor con campos obligatorios
+    public User(Role role, String email, String passwordHash, String firstName, String lastName) {
+        this.role = role;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.status = UserStatus.ACTIVE; // Por defecto activo
+        this.createdAt = LocalDateTime.now();
+        this.addresses = new ArrayList<>();
+    }
+
+    // Constructor completo (excepto ID y timestamp autogenerados)
+
+    // Getters y Setters
 
     // Métodos helper de consulta (sin efectos secundarios)
 
@@ -93,7 +109,7 @@ public class User {
         return Objects.hash(userId);
     }
 
-    // toString personalizado sin navegación a objetos relacionados (solo IDs y tamaño de colecciones)
+    // toString sin navegación a objetos relacionados (solo IDs y tamaño de colecciones)
 
     @Override
     public String toString() {
