@@ -30,14 +30,24 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class UserSession {
 
     private Long sessionId;
     private User user; // Nullable - NULL para invitados
     private String sessionToken;
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
     private LocalDateTime expiresAt;
+
+    // Constructor vacío (requerido para JPA futuro)
+
+    // Constructor para sesión de invitado (sin user)
+
+    // Constructor para sesión de usuario registrado
+
+    // Constructor completo (excepto ID y createdAt autogenerados)
+
+    // Getters y Setters
 
     // Método helper para verificar si es sesión de invitado
     public boolean isGuestSession() {
@@ -64,7 +74,7 @@ public class UserSession {
         return Objects.hash(sessionId);
     }
 
-    // toString personalizado sin navegación a objetos relacionados (solo IDs)
+    // toString sin navegación a objetos relacionados (solo IDs)
 
     @Override
     public String toString() {
