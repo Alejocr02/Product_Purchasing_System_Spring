@@ -36,6 +36,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class Product {
 
     private Long productId;
@@ -45,10 +46,25 @@ public class Product {
     private String description;
     private BigDecimal price;
     private Integer stockQty;
-    @Builder.Default
-    private Boolean isActive = true;
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private Boolean isActive;
+    private LocalDateTime createdAt;
+
+    // Constructor vacío (requerido para JPA futuro)
+
+    // Constructor con campos obligatorios
+    public Product(Category category, String sku, String name, BigDecimal price, Integer stockQty) {
+        this.category = category;
+        this.sku = sku;
+        this.name = name;
+        this.price = price;
+        this.stockQty = stockQty;
+        this.isActive = true; // Por defecto activo
+        this.createdAt = LocalDateTime.now();
+    }
+
+    // Constructor completo (excepto ID y timestamp autogenerados)
+
+    // Getters y Setters
 
     // Setters personalizados con validación (override de Lombok)
 
@@ -82,7 +98,7 @@ public class Product {
         return Objects.hash(productId);
     }
 
-    // toString personalizado sin navegación a objetos relacionados (solo IDs)
+    // toString sin navegación a objetos relacionados (solo IDs)
 
     @Override
     public String toString() {
