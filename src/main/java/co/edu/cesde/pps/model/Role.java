@@ -22,11 +22,23 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class Role {
 
     private Long roleId;
     private String name;
     private String description;
+
+    // Constructor vacío (requerido para JPA futuro)
+
+    // Constructor con campos obligatorios
+    public Role(String name) {
+        this.name = name;
+    }
+
+    // Constructor completo (excepto ID autogenerado)
+
+    // Getters y Setters
 
     // equals y hashCode basados en ID
 
@@ -43,7 +55,7 @@ public class Role {
         return Objects.hash(roleId);
     }
 
-    // toString personalizado sin navegación a objetos relacionados
+    // toString sin navegación a objetos relacionados
 
     @Override
     public String toString() {
