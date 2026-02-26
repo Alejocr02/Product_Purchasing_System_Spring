@@ -46,21 +46,14 @@ public class Product {
     private String description;
     private BigDecimal price;
     private Integer stockQty;
-    private Boolean isActive;
-    private LocalDateTime createdAt;
+    @Builder.Default
+    private Boolean isActive = true;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     // Constructor vacío (requerido para JPA futuro)
 
     // Constructor con campos obligatorios
-    public Product(Category category, String sku, String name, BigDecimal price, Integer stockQty) {
-        this.category = category;
-        this.sku = sku;
-        this.name = name;
-        this.price = price;
-        this.stockQty = stockQty;
-        this.isActive = true; // Por defecto activo
-        this.createdAt = LocalDateTime.now();
-    }
 
     // Constructor completo (excepto ID y timestamp autogenerados)
 
