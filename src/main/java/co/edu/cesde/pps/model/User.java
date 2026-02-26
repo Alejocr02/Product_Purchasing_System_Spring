@@ -2,6 +2,8 @@ package co.edu.cesde.pps.model;
 
 import co.edu.cesde.pps.enums.UserStatus;
 import lombok.*;
+import jakarta.persistence.*;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,6 +38,8 @@ import java.util.Objects;
  * NOTA: Los métodos de gestión bidireccional (addAddress, removeAddress) fueron movidos
  * a la capa de servicio (UserService) en etapa 05 para mantener el modelo limpio.
  */
+@Entity
+@Table( name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -44,13 +48,29 @@ import java.util.Objects;
 
 public class User {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long userId;
+
+    @Column(name = "role_id", nullable = false)
     private Role role;
+
+    @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
+
+    @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
+
+    @Column(name = "first_name", nullable = false, length = 50)
     private String firstName;
+
+    @Column(name = "last_name", nullable = false, length = 50)
     private String lastName;
+
+    @Column(name = "phone", length = 20)
     private String phone;
+
     @Builder.Default
     private UserStatus status = UserStatus.ACTIVE;
     @Builder.Default

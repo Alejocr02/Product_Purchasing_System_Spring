@@ -40,6 +40,7 @@ public class Role {
     private String description;
 
 
+
     // Constructor vacío (requerido para JPA futuro)
 
     // Constructor con campos obligatorios
