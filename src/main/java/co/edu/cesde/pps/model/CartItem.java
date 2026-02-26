@@ -47,16 +47,11 @@ public class CartItem {
     private Product product;
     private Integer quantity;
     private BigDecimal unitPrice;
-    private LocalDateTime addedAt;
+    @Builder.Default
+    private LocalDateTime addedAt = LocalDateTime.now();
 
     // Constructor con campos obligatorios
-    public CartItem(Cart cart, Product product, Integer quantity, BigDecimal unitPrice) {
-        this.cart = cart;
-        this.product = product;
-        this.quantity = quantity;
-        this.unitPrice = unitPrice;
-        this.addedAt = LocalDateTime.now();
-    }
+
 
     // Constructor completo (excepto ID y timestamp autogenerado)
 
