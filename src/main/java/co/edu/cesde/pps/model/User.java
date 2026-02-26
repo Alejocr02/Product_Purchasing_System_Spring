@@ -72,11 +72,16 @@ public class User {
     private String phone;
 
     @Builder.Default
+    @Column(name = "status", nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
+
     @Builder.Default
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
     // Colecciones para relaciones 1:N
+
     @Builder.Default
+    @Column(name = "addresses")
     private List<Address> addresses = new ArrayList<>();
     // Constructor vacío (requerido para JPA futuro)
 
