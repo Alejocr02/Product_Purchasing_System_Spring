@@ -53,20 +53,15 @@ public class Payment {
     private BigDecimal amount;
     private Currency currency;
     private String providerReference;
-    private LocalDateTime paidAt;
+    @Builder.Default
+    private LocalDateTime paidAt = null;
+
 
     // Constructor vacío (requerido para JPA futuro)
 
     // Constructor con campos obligatorios (paidAt NULL para pending)
-    public Payment(Order order, PaymentMethod paymentMethod, PaymentStatus paymentStatus,
-                   BigDecimal amount, Currency currency) {
-        this.order = order;
-        this.paymentMethod = paymentMethod;
-        this.paymentStatus = paymentStatus;
-        this.amount = amount;
-        this.currency = currency;
-        this.paidAt = null; // Se establece cuando el pago se completa
-    }
+
+
 
     // Constructor completo (excepto ID autogenerado)
 
