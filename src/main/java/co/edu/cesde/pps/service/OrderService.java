@@ -141,18 +141,31 @@ public class OrderService {
 
         // 5. Crear orden con número único
         String orderNumber = generateOrderNumber();
-        Order order = new Order(orderNumber, userId, 1L, // TODO: orderStatusId = PENDING
-            shippingAddressId, billingAddressId);
+        Order order = Order.builder()
+                .orderId(generateNextId())
+                .orderNumber(orderNumber)
+                .userId(userId)
+                .orderStatusId(1L)
+                .shippingAddressId(shippingAddressId)
+                .billingAddressId(billingAddressId)
+                .subtotal(BigDecimal.ZERO)
+                .tax(BigDecimal.ZERO)
+                .shippingCost(BigDecimal.ZERO)
+                .total(BigDecimal.ZERO)
+                .createdAt(LocalDateTime.now())
+                .build();
         order.setOrderId(generateNextId());
 
         // 6. Copiar items del carrito a la orden (congelar precios históricos)
         for (CartItem cartItem : cart.getItems()) {
-            OrderItem orderItem = new OrderItem(
-                order,
-                cartItem.getProduct(),
-                cartItem.getQuantity(),
-                cartItem.getUnitPrice()  // Precio histórico al momento de compra
-            );
+            OrderItem orderItem = OrderItem.builder()
+                    .orderItemId(generateNextOrderItemId())
+                    .order(order)
+                    .product(cartItem.getProduct())
+                    .quantity(cartItem.getQuantity())
+                    .unitPrice(cartItem.getUnitPrice())
+                    .lineTotal(BigDecimal.ZERO) // Se calculará después
+                    .build();
             orderItem.setOrderItemId(generateNextOrderItemId());
 
             // Calcular lineTotal
