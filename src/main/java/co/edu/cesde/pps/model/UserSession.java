@@ -1,6 +1,7 @@
 package co.edu.cesde.pps.model;
 
 import lombok.*;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -25,6 +26,8 @@ import java.util.Objects;
  * - N:1 con User (opcional, nullable - muchas sesiones pueden pertenecer a un usuario)
  * - 1:N con Cart (una sesión puede tener múltiples carritos en el tiempo)
  */
+@Entity
+@Table(name = "user_sessions")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,11 +36,23 @@ import java.util.Objects;
 
 public class UserSession {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Column(name = "session_id")
     private Long sessionId;
+
+    @Column(name = "user_id")
     private User user; // Nullable - NULL para invitados
+
+    @Column(name = "session_token", nullable = false, unique = true, length = 255)
     private String sessionToken;
+
     @Builder.Default
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "expires_at")
     private LocalDateTime expiresAt;
 
     // Constructor vacío (requerido para JPA futuro)
