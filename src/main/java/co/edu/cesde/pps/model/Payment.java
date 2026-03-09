@@ -3,6 +3,7 @@ package co.edu.cesde.pps.model;
 import co.edu.cesde.pps.enums.Currency;
 import co.edu.cesde.pps.util.ValidationUtils;
 import lombok.*;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -38,6 +39,8 @@ import java.util.Objects;
  * - N:1 con PaymentMethod (muchos pagos usan un método)
  * - N:1 con PaymentStatus (muchos pagos tienen un estado)
  */
+@Entity
+@Table(name = "payments")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -46,26 +49,33 @@ import java.util.Objects;
 
 public class Payment {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
+    @Column(name = "payment_id")
     private Long paymentId;
+
+    @Column (name = "order_id", nullable = false)
     private Order order;
+
+    @Column (name = "payment_method_id", nullable = false)
     private PaymentMethod paymentMethod;
+
+    @Column (name = "payment_status_id", nullable = false)
     private PaymentStatus paymentStatus;
+
+    @Column (name = "amount", nullable = false, precision = 10, scale = 2)
     private BigDecimal amount;
+
+    @Column (name = "currency", nullable = false)
     private Currency currency;
+
+    @Column (name = "provider_reference", length = 255)
     private String providerReference;
+
     @Builder.Default
+    @Column (name = "paid_at")
     private LocalDateTime paidAt = null;
-
-
-    // Constructor vacío (requerido para JPA futuro)
-
-    // Constructor con campos obligatorios (paidAt NULL para pending)
-
-
-
-    // Constructor completo (excepto ID autogenerado)
-
-    // Getters y Setters
 
     // Setter personalizado con validación (override de Lombok)
 
