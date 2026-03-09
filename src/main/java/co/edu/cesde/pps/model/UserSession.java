@@ -55,16 +55,6 @@ public class UserSession {
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
 
-    // Constructor vacío (requerido para JPA futuro)
-
-    // Constructor para sesión de invitado (sin user)
-
-    // Constructor para sesión de usuario registrado
-
-    // Constructor completo (excepto ID y createdAt autogenerados)
-
-    // Getters y Setters
-
     // Método helper para verificar si es sesión de invitado
     public boolean isGuestSession() {
         return user == null;
