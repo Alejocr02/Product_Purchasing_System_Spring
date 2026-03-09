@@ -39,18 +39,10 @@ public class Role {
     @Column(name = "description", length = 255)
     private String description;
 
-
-
-    // Constructor vacío (requerido para JPA futuro)
-
     // Constructor con campos obligatorios
     public Role(String name) {
         this.name = name;
     }
-
-    // Constructor completo (excepto ID autogenerado)
-
-    // Getters y Setters
 
     // equals y hashCode basados en ID
 
