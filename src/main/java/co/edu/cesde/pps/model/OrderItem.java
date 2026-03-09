@@ -2,6 +2,7 @@ package co.edu.cesde.pps.model;
 
 import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -38,6 +39,8 @@ import java.util.Objects;
  * - N:1 con Order (muchos items pertenecen a una orden)
  * - N:1 con Product (muchos items referencian a un producto)
  */
+@Entity
+@Table (name = "order_items")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -46,14 +49,27 @@ import java.util.Objects;
 
 public class OrderItem {
 
+    @Id
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
+
+    @Column (name = "order_item_id")
     private Long orderItemId;
+
+    @Column (name = "order_id", nullable = false)
     private Order order;
+
+    @Column (name = "product_id", nullable = false)
     private Product product;
+
+    @Column (name = "quantity", nullable = false)
     private Integer quantity;
+
+    @Column (name = "unit_price", nullable = false)
     private BigDecimal unitPrice;
+
+    @Column (name = "line_total", nullable = false)
     private BigDecimal lineTotal;
 
-    // Constructor vacío (requerido para JPA futuro)
 
     // Constructor con campos obligatorios (lineTotal se calcula)
     public OrderItem(Order order, Product product, Integer quantity, BigDecimal unitPrice) {
