@@ -2,6 +2,7 @@ package co.edu.cesde.pps.model;
 
 import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
 
 /**
  * Entidad Order - Representa una compra finalizada (pedido/orden).
@@ -44,6 +46,8 @@ import java.util.Objects;
  * - 1:N con OrderItem (items de la orden)
  * - 1:N con Payment (pagos asociados, puede haber reintentos)
  */
+@Entity
+@Table (name = "orders")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -52,32 +56,53 @@ import java.util.Objects;
 
 public class Order {
 
+    @Id
+    @GeneratedValue (strategy = jakarta.persistence.GenerationType.IDENTITY)
+
+    @Column (name = "order_id")
     private Long orderId;
+
+    @Column (name = "order_number", nullable = false, unique = true, length = 50)
     private String orderNumber;
+
+    @Column (name = "user_id", nullable = false)
     private Long userId; // NOT NULL - checkout requiere usuario registrado
+
+    @Column (name = "order_status_id")
     private Long orderStatusId;
+
+    @Column (name = "shipping_address_id")
     private Long shippingAddressId;
+
+    @Column (name = "billing_address_id")
     private Long billingAddressId;
+
+
     @Builder.Default
+    @Column (name = "subtotal", nullable = false)
     private BigDecimal subtotal = BigDecimal.ZERO;
+
+
     @Builder.Default
+    @Column (name = "tax", nullable = false)
     private BigDecimal tax = BigDecimal.ZERO;
+
     @Builder.Default
+    @Column (name = "shipping_cost", nullable = false)
     private BigDecimal shippingCost = BigDecimal.ZERO;
+
     @Builder.Default
+    @Column (name = "total", nullable = false)
     private BigDecimal total = BigDecimal.ZERO;
+
     @Builder.Default
+    @Column (name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
 
     // Colección para relación 1:N con OrderItem
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
-
-
-    // Constructor completo (excepto ID y timestamp autogenerado)
-
-    // Getters y Setters
 
     // Setters personalizados con validación (override de Lombok)
 
