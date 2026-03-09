@@ -83,17 +83,6 @@ public class User {
     @Builder.Default
     @Column(name = "addresses")
     private List<Address> addresses = new ArrayList<>();
-    // Constructor vacío (requerido para JPA futuro)
-
-    // Constructor con campos obligatorios
-
-
-    // Constructor completo (excepto ID y timestamp autogenerados)
-
-    // Getters y Setters
-
-    // Métodos helper de consulta (sin efectos secundarios)
-
     /**
      * Obtiene la dirección por defecto del usuario
      */
