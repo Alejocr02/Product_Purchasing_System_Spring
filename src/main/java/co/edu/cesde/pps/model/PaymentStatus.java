@@ -1,5 +1,6 @@
 package co.edu.cesde.pps.model;
 
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Objects;
@@ -16,6 +17,8 @@ import java.util.Objects;
  * Relaciones (futuro - etapa02):
  * - 1:N con Payment (un estado puede aplicar a múltiples pagos)
  */
+@Entity
+@Table (name = "payment_statuses")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,17 +27,19 @@ import java.util.Objects;
 
 public class PaymentStatus {
 
-    private Long paymentStatusId;
-    private String name;
+    @Id
+    @GeneratedValue (strategy = jakarta.persistence.GenerationType.IDENTITY)
 
-    // Constructor vacío (requerido para JPA futuro)
+    @Column(name = "payment_status_id")
+    private Long paymentStatusId;
+
+    @Column (name = "name", nullable = false, unique = true, length = 50)
+    private String name;
 
     // Constructor con campos obligatorios
     public PaymentStatus(String name) {
         this.name = name;
     }
-
-    // Getters y Setters
 
     // equals y hashCode basados en ID
 
