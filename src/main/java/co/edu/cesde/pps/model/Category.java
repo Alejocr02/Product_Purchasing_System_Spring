@@ -58,18 +58,12 @@ public class Category {
 
     // Colecciones para relaciones 1:N
     @Builder.Default
+    @Column (name = "subcategories")
     private List<Category> subcategories = new ArrayList<>();
+
     @Builder.Default
+    @Column (name = "products")
     private List<Product> products = new ArrayList<>();
-
-    // Constructor vacío (requerido para JPA futuro)
-    // Constructor para categoría raíz (sin parent)
-
-    // Constructor para subcategoría (con parent)
-
-    // Getters y Setters
-
-    // Métodos helper de consulta (sin efectos secundarios)
 
     /**
      * Verifica si es categoría raíz
