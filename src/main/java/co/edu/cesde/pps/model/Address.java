@@ -72,11 +72,6 @@ public class Address {
     @Column(name = "is_default", nullable = false)
     private Boolean isDefault = false;
 
-
-    // Constructor completo (excepto ID autogenerado)
-
-    // Getters y Setters
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
