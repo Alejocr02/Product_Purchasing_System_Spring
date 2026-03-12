@@ -57,10 +57,12 @@ public class Category {
 
 
     // Colecciones para relaciones 1:N
+    @ManyToOne(fetch = FetchType.LAZY)
     @Builder.Default
     @Column (name = "subcategories")
     private List<Category> subcategories = new ArrayList<>();
 
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     @Column (name = "products")
     private List<Product> products = new ArrayList<>();
