@@ -57,24 +57,28 @@ import java.util.Objects;
 public class Order {
 
     @Id
-    @GeneratedValue (strategy = jakarta.persistence.GenerationType.IDENTITY)
+    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
 
-    @Column (name = "order_id")
+    @Column(name = "order_id")
     private Long orderId;
 
-    @Column (name = "order_number", nullable = false, unique = true, length = 50)
+    @Column(name = "order_number", nullable = false, unique = true, length = 50)
     private String orderNumber;
 
-    @Column (name = "user_id", nullable = false)
-    private Long userId; // NOT NULL - checkout requiere usuario registrado
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Long userId;
 
-    @Column (name = "order_status_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_status_id")
     private Long orderStatusId;
 
-    @Column (name = "shipping_address_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shipping_address_id")
     private Long shippingAddressId;
 
-    @Column (name = "billing_address_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "billing_address_id")
     private Long billingAddressId;
 
 
