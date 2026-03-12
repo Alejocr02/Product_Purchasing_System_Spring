@@ -108,6 +108,7 @@ public class Cart {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     // Colección para relación 1:N
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     @Column (name = "items")
     private List<CartItem> items = new ArrayList<>();
