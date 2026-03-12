@@ -52,13 +52,15 @@ public class OrderItem {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
 
-    @Column (name = "order_item_id")
+    @Column(name = "order_item_id")
     private Long orderItemId;
 
-    @Column (name = "order_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Column (name = "product_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @Column (name = "quantity", nullable = false)
@@ -69,20 +71,6 @@ public class OrderItem {
 
     @Column (name = "line_total", nullable = false)
     private BigDecimal lineTotal;
-
-
-    // Constructor con campos obligatorios (lineTotal se calcula)
-    public OrderItem(Order order, Product product, Integer quantity, BigDecimal unitPrice) {
-        this.order = order;
-        this.product = product;
-        this.quantity = quantity;
-        this.unitPrice = unitPrice;
-        this.lineTotal = calculateLineTotal();
-    }
-
-    // Constructor completo (excepto ID autogenerado)
-
-    // Getters y Setters
 
     // Setters personalizados con validación (override de Lombok)
 
