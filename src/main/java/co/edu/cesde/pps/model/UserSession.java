@@ -42,8 +42,9 @@ public class UserSession {
     @Column(name = "session_id")
     private Long sessionId;
 
-    @Column(name = "user_id")
-    private User user; // Nullable - NULL para invitados
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "session_token", nullable = false, unique = true, length = 255)
     private String sessionToken;
