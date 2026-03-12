@@ -105,6 +105,7 @@ public class Order {
 
 
     // Colección para relación 1:N con OrderItem
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
 
