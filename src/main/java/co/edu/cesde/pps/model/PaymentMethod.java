@@ -37,11 +37,6 @@ public class PaymentMethod {
     @Column (name = "name", nullable = false, unique = true, length = 50)
     private String name;
 
-    // Constructor con campos obligatorios
-    public PaymentMethod(String name) {
-        this.name = name;
-    }
-
     // equals y hashCode basados en ID
 
     @Override
