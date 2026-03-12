@@ -87,10 +87,12 @@ public class Cart {
     @Column (name = "cart_id")
     private Long cartId;
 
-    @Column (name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user; // Nullable - NULL para invitados
 
-    @Column (name = "session_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "session_id", nullable = false)
     private UserSession session;
 
     @Builder.Default
