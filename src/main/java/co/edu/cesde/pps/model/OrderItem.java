@@ -2,6 +2,7 @@ package co.edu.cesde.pps.model;
 
 import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,7 +41,9 @@ import java.util.Objects;
  * - N:1 con Product (muchos items referencian a un producto)
  */
 @Entity
-@Table (name = "order_items")
+@Table(name = "order_items", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"order_id", "product_id"})
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -57,6 +60,7 @@ public class OrderItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
+    @JsonBackReference("order-items")
     private Order order;
 
     @ManyToOne(fetch = FetchType.LAZY)
