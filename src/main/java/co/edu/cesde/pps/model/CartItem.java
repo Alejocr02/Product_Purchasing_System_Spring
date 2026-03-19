@@ -2,6 +2,7 @@ package co.edu.cesde.pps.model;
 
 import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,7 +37,9 @@ import java.util.Objects;
  * - N:1 con Product (muchos items referencian a un producto)
  */
 @Entity
-@Table (name = "cart_items")
+@Table(name = "cart_items", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"cart_id", "product_id"})
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -53,6 +56,7 @@ public class CartItem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cart_id", nullable = false)
+    @JsonBackReference("cart-items")
     private Cart cart;
 
     @ManyToOne(fetch = FetchType.LAZY)
