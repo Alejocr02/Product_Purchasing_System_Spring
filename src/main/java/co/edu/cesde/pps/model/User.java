@@ -84,7 +84,7 @@ public class User {
 
 
     @OneToMany(mappedBy = "user", fetch =FetchType.LAZY)
-    @JsonManagedReference("user.addresses")
+    @JsonManagedReference("user-addresses")
     @Builder.Default
     private List<Address> addresses = new ArrayList<>();
     /**

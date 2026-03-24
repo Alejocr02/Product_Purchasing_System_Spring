@@ -22,10 +22,10 @@ import java.util.Objects;
  * Campos:
  * - orderId: Identificador único de la orden (PK)
  * - orderNumber: Número de orden único (UNIQUE) - para tracking y referencia
- * - userId: Usuario que realizó la compra (FK a User) - NOT NULL
- * - orderStatusId: Estado actual de la orden (FK a OrderStatus)
- * - shippingAddressId: Dirección de envío (FK a Address)
- * - billingAddressId: Dirección de facturación (FK a Address)
+ * - user: Usuario que realizó la compra (FK a User) - NOT NULL
+ * - orderStatus: Estado actual de la orden (FK a OrderStatus)
+ * - shippingAddress: Dirección de envío (FK a Address)
+ * - billingAddress: Dirección de facturación (FK a Address)
  * - subtotal: Suma de precios de items antes de impuestos/envío (BigDecimal)
  * - tax: Impuestos aplicados (BigDecimal)
  * - shippingCost: Costo de envío (BigDecimal)
@@ -68,19 +68,19 @@ public class Order {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private Long userId;
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_status_id")
-    private Long orderStatusId;
+    @JoinColumn(name = "order_status_id", nullable = false)
+    private OrderStatus orderStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shipping_address_id")
-    private Long shippingAddressId;
+    @JoinColumn(name = "shipping_address_id", nullable = false)
+    private Address shippingAddress;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "billing_address_id")
-    private Long billingAddressId;
+    @JoinColumn(name = "billing_address_id", nullable = false)
+    private Address billingAddress;
 
 
     @Builder.Default
@@ -160,10 +160,10 @@ public class Order {
         return "Order{" +
                 "orderId=" + orderId +
                 ", orderNumber='" + orderNumber + '\'' +
-                ", userId=" + userId +
-                ", orderStatusId=" + orderStatusId +
-                ", shippingAddressId=" + shippingAddressId +
-                ", billingAddressId=" + billingAddressId +
+                ", userId=" + (user != null ? user.getUserId() : null) +
+                ", orderStatusId=" + (orderStatus != null ? orderStatus.getOrderStatusId() : null) +
+                ", shippingAddressId=" + (shippingAddress != null ? shippingAddress.getAddressId() : null) +
+                ", billingAddressId=" + (billingAddress != null ? billingAddress.getAddressId() : null) +
                 ", subtotal=" + subtotal +
                 ", tax=" + tax +
                 ", shippingCost=" + shippingCost +
