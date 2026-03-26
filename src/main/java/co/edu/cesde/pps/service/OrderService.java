@@ -144,17 +144,12 @@ public class OrderService {
         Order order = Order.builder()
                 .orderId(generateNextId())
                 .orderNumber(orderNumber)
-                .userId(userId)
-                .orderStatusId(1L)
-                .shippingAddressId(shippingAddressId)
-                .billingAddressId(billingAddressId)
-                .subtotal(BigDecimal.ZERO)
-                .tax(BigDecimal.ZERO)
-                .shippingCost(BigDecimal.ZERO)
-                .total(BigDecimal.ZERO)
+                .user(cart.getUser())
+                .shippingAddress(shippingAddress) // usar Address en lugar de shippingAddressId
+                .billingAddress(billingAddress)   // usar Address en lugar de billingAddressId
                 .createdAt(LocalDateTime.now())
+                .items(new ArrayList<>())
                 .build();
-        order.setOrderId(generateNextId());
 
         // 6. Copiar items del carrito a la orden (congelar precios históricos)
         for (CartItem cartItem : cart.getItems()) {
@@ -250,7 +245,7 @@ public class OrderService {
 
         // TODO Etapa 06: List<Order> orders = orderRepository.findByUserId(userId);
         List<Order> userOrders = ordersInMemory.stream()
-                .filter(o -> o.getUserId().equals(userId))
+                .filter(o -> o.getUser() != null && o.getUser().getUserId().equals(userId))
                 .collect(Collectors.toList());
 
         return orderMapper.toDTOList(userOrders);
@@ -265,7 +260,7 @@ public class OrderService {
     public List<OrderDTO> findOrdersByStatus(Long statusId) {
         // TODO Etapa 06: List<Order> orders = orderRepository.findByOrderStatusId(statusId);
         List<Order> statusOrders = ordersInMemory.stream()
-                .filter(o -> o.getOrderStatusId().equals(statusId))
+                .filter(o -> o.getOrderStatus() != null && o.getOrderStatus().getOrderStatusId().equals(statusId))
                 .collect(Collectors.toList());
 
         return orderMapper.toDTOList(statusOrders);

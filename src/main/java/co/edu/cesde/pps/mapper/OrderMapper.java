@@ -4,13 +4,13 @@ import co.edu.cesde.pps.dto.OrderDTO;
 import co.edu.cesde.pps.dto.OrderItemDTO;
 import co.edu.cesde.pps.model.Order;
 import co.edu.cesde.pps.model.OrderItem;
+import co.edu.cesde.pps.model.User;
 import co.edu.cesde.pps.util.MoneyUtils;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Mapper para conversión entre Order/OrderItem (Entities) y OrderDTO/OrderItemDTO.
- *
  * Responsabilidades:
  * - Convertir Entity a DTO (toDTO)
  * - Convertir DTO a Entity (toEntity)
@@ -35,7 +35,8 @@ public class OrderMapper {
         OrderDTO dto = new OrderDTO();
         dto.setOrderId(order.getOrderId());
         dto.setOrderNumber(order.getOrderNumber());
-        dto.setUserId(order.getUserId());
+        // Ajuste: Order almacena un objeto User, no userId directamente
+        dto.setUserId(order.getUser() != null ? order.getUser().getUserId() : null);
 
         // TODO: En etapa 06 con JPA, cargar user para obtener email y fullName
         // Por ahora solo tenemos userId
@@ -124,7 +125,6 @@ public class OrderMapper {
 
     /**
      * Convierte OrderDTO a Order Entity.
-     *
      * NOTA: No convierte items completamente, eso se maneja en el servicio.
      *
      * @param dto DTO a convertir
@@ -138,7 +138,12 @@ public class OrderMapper {
         Order order = new Order();
         order.setOrderId(dto.getOrderId());
         order.setOrderNumber(dto.getOrderNumber());
-        order.setUserId(dto.getUserId());
+        // Ajuste: Order tiene un campo User; asignar un User con el id (si viene)
+        if (dto.getUserId() != null) {
+            User user = new User();
+            user.setUserId(dto.getUserId());
+            order.setUser(user);
+        }
         // orderStatusId, shippingAddressId, billingAddressId se asignan en servicio
         order.setSubtotal(dto.getSubtotal());
         order.setTax(dto.getTax());
@@ -151,7 +156,6 @@ public class OrderMapper {
 
     /**
      * Convierte OrderItemDTO a OrderItem Entity.
-     *
      * NOTA: No convierte Order ni Product, eso se maneja en el servicio.
      *
      * @param dto DTO a convertir
