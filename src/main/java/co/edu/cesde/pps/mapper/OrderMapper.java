@@ -1,5 +1,6 @@
 package co.edu.cesde.pps.mapper;
 
+import co.edu.cesde.pps.dto.AddressDTO;
 import co.edu.cesde.pps.dto.OrderDTO;
 import co.edu.cesde.pps.dto.OrderItemDTO;
 import co.edu.cesde.pps.model.Order;
@@ -37,6 +38,11 @@ public class OrderMapper {
         dto.setOrderNumber(order.getOrderNumber());
         // Ajuste: Order almacena un objeto User, no userId directamente
         dto.setUserId(order.getUser() != null ? order.getUser().getUserId() : null);
+        dto.setUserEmail(order.getUser() != null ? order.getUser().getEmail() : null);
+        dto.setUserFullName(order.getUser() != null ? order.getUser().getFullName() : null);
+        dto.setOrderStatusName(order.getOrderStatus() != null ? order.getOrderStatus().getName() : null);
+        dto.setShippingAddress(toAddressDTO(order.getShippingAddress()));
+        dto.setBillingAddress(toAddressDTO(order.getBillingAddress()));
 
         // TODO: En etapa 06 con JPA, cargar user para obtener email y fullName
         // Por ahora solo tenemos userId
@@ -174,6 +180,14 @@ public class OrderMapper {
         item.setLineTotal(dto.getLineTotal());
 
         return item;
+    }
+
+    private AddressDTO toAddressDTO(co.edu.cesde.pps.model.Address address) {
+        if (address == null) {
+            return null;
+        }
+
+        return new AddressMapper().toDTO(address);
     }
 
     /**

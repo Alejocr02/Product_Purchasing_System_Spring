@@ -7,14 +7,15 @@ import co.edu.cesde.pps.exception.InsufficientStockException;
 import co.edu.cesde.pps.mapper.ProductMapper;
 import co.edu.cesde.pps.model.Category;
 import co.edu.cesde.pps.model.Product;
+import co.edu.cesde.pps.repository.ProductRepository;
 import co.edu.cesde.pps.util.CalculationUtils;
 import co.edu.cesde.pps.util.ValidationUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Servicio para gestión de productos.
@@ -26,24 +27,19 @@ import java.util.stream.Collectors;
  * - Búsqueda y filtrado
  * - Validación de SKU único
  * - Conversión Entity <-> DTO
- *
- * NOTA: En Etapa 06 se agregará:
- * - @Service annotation
- * - @Transactional
- * - Inyección de ProductRepository
- * - Persistencia real
  */
+@Service
+@Transactional(readOnly = true)
 public class ProductService {
 
     private final ProductMapper productMapper;
     private final CategoryService categoryService;
-    // TODO Etapa 06: private final ProductRepository productRepository;
-    private final List<Product> productsInMemory;
+    private final ProductRepository productRepository;
 
-    public ProductService(CategoryService categoryService) {
+    public ProductService(CategoryService categoryService, ProductRepository productRepository) {
         this.productMapper = new ProductMapper();
         this.categoryService = categoryService;
-        this.productsInMemory = new ArrayList<>();
+        this.productRepository = productRepository;
     }
 
     /**
@@ -54,6 +50,7 @@ public class ProductService {
      * @throws DuplicateEntityException si el SKU ya existe
      * @throws EntityNotFoundException si la categoría no existe
      */
+    @Transactional
     public ProductDTO createProduct(ProductDTO productDTO) {
         // Validaciones
         ValidationUtils.validateNotBlank(productDTO.getSku(), "sku");
@@ -71,13 +68,11 @@ public class ProductService {
 
         // Crear producto
         Product product = productMapper.toEntity(productDTO);
-        product.setProductId(generateNextId());
         product.setCategory(category);
         product.setCreatedAt(LocalDateTime.now());
+        category.getProducts().add(product);
 
-        // TODO Etapa 06: productRepository.save(product);
-        productsInMemory.add(product);
-
+        product = productRepository.save(product);
         return productMapper.toDTO(product);
     }
 
@@ -90,6 +85,7 @@ public class ProductService {
      * @throws EntityNotFoundException si no existe
      * @throws DuplicateEntityException si el nuevo SKU ya existe
      */
+    @Transactional
     public ProductDTO updateProduct(Long productId, ProductDTO productDTO) {
         Product product = findProductEntityOrThrow(productId);
 
@@ -113,13 +109,17 @@ public class ProductService {
 
         // Actualizar categoría si cambió
         if (productDTO.getCategoryId() != null &&
-            !productDTO.getCategoryId().equals(product.getCategory().getCategoryId())) {
+                (product.getCategory() == null || !productDTO.getCategoryId().equals(product.getCategory().getCategoryId()))) {
+            Category currentCategory = product.getCategory();
             Category newCategory = categoryService.findCategoryEntityOrThrow(productDTO.getCategoryId());
+            if (currentCategory != null) {
+                currentCategory.getProducts().remove(product);
+            }
+            newCategory.getProducts().add(product);
             product.setCategory(newCategory);
         }
 
-        // TODO Etapa 06: productRepository.save(product);
-
+        product = productRepository.save(product);
         return productMapper.toDTO(product);
     }
 
@@ -129,10 +129,11 @@ public class ProductService {
      * @param productId ID del producto
      * @throws EntityNotFoundException si no existe
      */
+    @Transactional
     public void deleteProduct(Long productId) {
         Product product = findProductEntityOrThrow(productId);
         product.setIsActive(false);
-        // TODO Etapa 06: productRepository.save(product);
+        productRepository.save(product);
     }
 
     /**
@@ -143,8 +144,7 @@ public class ProductService {
      * @throws EntityNotFoundException si no existe
      */
     public ProductDTO findById(Long productId) {
-        Product product = findProductEntityOrThrow(productId);
-        return productMapper.toDTO(product);
+        return productMapper.toDTO(findProductEntityOrThrow(productId));
     }
 
     /**
@@ -155,12 +155,8 @@ public class ProductService {
      * @throws EntityNotFoundException si no existe
      */
     public ProductDTO findBySku(String sku) {
-        // TODO Etapa 06: Product product = productRepository.findBySku(sku)
-        Product product = productsInMemory.stream()
-                .filter(p -> p.getSku().equalsIgnoreCase(sku))
-                .findFirst()
+        Product product = productRepository.findBySkuIgnoreCase(sku)
                 .orElseThrow(() -> new EntityNotFoundException("Product with SKU: " + sku));
-
         return productMapper.toDTO(product);
     }
 
@@ -170,8 +166,7 @@ public class ProductService {
      * @return Lista de ProductDTO
      */
     public List<ProductDTO> findAllProducts() {
-        // TODO Etapa 06: List<Product> products = productRepository.findAll();
-        return productMapper.toDTOList(productsInMemory);
+        return productMapper.toDTOList(productRepository.findAll());
     }
 
     /**
@@ -180,12 +175,7 @@ public class ProductService {
      * @return Lista de ProductDTO
      */
     public List<ProductDTO> findActiveProducts() {
-        // TODO Etapa 06: List<Product> products = productRepository.findByIsActive(true);
-        List<Product> activeProducts = productsInMemory.stream()
-                .filter(Product::getIsActive)
-                .collect(Collectors.toList());
-
-        return productMapper.toDTOList(activeProducts);
+        return productMapper.toDTOList(productRepository.findByIsActiveTrue());
     }
 
     /**
@@ -196,13 +186,7 @@ public class ProductService {
      */
     public List<ProductDTO> findByCategory(Long categoryId) {
         categoryService.findCategoryEntityOrThrow(categoryId); // Validar que existe
-
-        // TODO Etapa 06: List<Product> products = productRepository.findByCategoryId(categoryId);
-        List<Product> categoryProducts = productsInMemory.stream()
-                .filter(p -> p.getCategory().getCategoryId().equals(categoryId))
-                .collect(Collectors.toList());
-
-        return productMapper.toDTOList(categoryProducts);
+        return productMapper.toDTOList(productRepository.findByCategory_CategoryId(categoryId));
     }
 
     /**
@@ -212,12 +196,7 @@ public class ProductService {
      * @return Lista de ProductDTO
      */
     public List<ProductDTO> searchByName(String name) {
-        // TODO Etapa 06: List<Product> products = productRepository.findByNameContaining(name);
-        List<Product> matchingProducts = productsInMemory.stream()
-                .filter(p -> p.getName().toLowerCase().contains(name.toLowerCase()))
-                .collect(Collectors.toList());
-
-        return productMapper.toDTOList(matchingProducts);
+        return productMapper.toDTOList(productRepository.findByNameContainingIgnoreCase(name));
     }
 
     /**
@@ -230,8 +209,7 @@ public class ProductService {
      */
     public boolean checkAvailability(Long productId, Integer quantity) {
         Product product = findProductEntityOrThrow(productId);
-        return product.getIsActive() &&
-               CalculationUtils.hasEnoughStock(product.getStockQty(), quantity);
+        return Boolean.TRUE.equals(product.getIsActive()) && CalculationUtils.hasEnoughStock(product.getStockQty(), quantity);
     }
 
     /**
@@ -254,11 +232,12 @@ public class ProductService {
      * @param newStock Nuevo stock
      * @throws EntityNotFoundException si el producto no existe
      */
+    @Transactional
     public void updateStock(Long productId, Integer newStock) {
         Product product = findProductEntityOrThrow(productId);
         ValidationUtils.validateNonNegative(BigDecimal.valueOf(newStock), "stock");
         product.setStockQty(newStock);
-        // TODO Etapa 06: productRepository.save(product);
+        productRepository.save(product);
     }
 
     /**
@@ -269,17 +248,15 @@ public class ProductService {
      * @throws EntityNotFoundException si el producto no existe
      * @throws InsufficientStockException si no hay stock suficiente
      */
+    @Transactional
     public void decreaseStock(Long productId, Integer quantity) {
         Product product = findProductEntityOrThrow(productId);
-
         if (!CalculationUtils.hasEnoughStock(product.getStockQty(), quantity)) {
-            throw new InsufficientStockException(productId, product.getSku(),
-                quantity, product.getStockQty());
+            throw new InsufficientStockException(productId, product.getSku(), quantity, product.getStockQty());
         }
 
-        int newStock = CalculationUtils.calculateNewStock(product.getStockQty(), quantity);
-        product.setStockQty(newStock);
-        // TODO Etapa 06: productRepository.save(product);
+        product.setStockQty(CalculationUtils.calculateNewStock(product.getStockQty(), quantity));
+        productRepository.save(product);
     }
 
     /**
@@ -289,13 +266,12 @@ public class ProductService {
      * @param quantity Cantidad a aumentar
      * @throws EntityNotFoundException si el producto no existe
      */
+    @Transactional
     public void increaseStock(Long productId, Integer quantity) {
         Product product = findProductEntityOrThrow(productId);
         ValidationUtils.validatePositive(quantity, "quantity");
-
-        int newStock = product.getStockQty() + quantity;
-        product.setStockQty(newStock);
-        // TODO Etapa 06: productRepository.save(product);
+        product.setStockQty(product.getStockQty() + quantity);
+        productRepository.save(product);
     }
 
     /**
@@ -305,9 +281,7 @@ public class ProductService {
      * @return true si existe
      */
     public boolean existsBySku(String sku) {
-        // TODO Etapa 06: return productRepository.existsBySku(sku);
-        return productsInMemory.stream()
-                .anyMatch(p -> p.getSku().equalsIgnoreCase(sku));
+        return productRepository.existsBySkuIgnoreCase(sku);
     }
 
     /**
@@ -319,18 +293,7 @@ public class ProductService {
      * @throws EntityNotFoundException si no existe
      */
     public Product findProductEntityOrThrow(Long productId) {
-        // TODO Etapa 06: return productRepository.findById(productId)
-        return productsInMemory.stream()
-                .filter(p -> p.getProductId().equals(productId))
-                .findFirst()
+        return productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Product", productId));
-    }
-
-    // Método auxiliar para simular auto-increment
-    private Long generateNextId() {
-        return productsInMemory.stream()
-                .mapToLong(Product::getProductId)
-                .max()
-                .orElse(0L) + 1;
     }
 }

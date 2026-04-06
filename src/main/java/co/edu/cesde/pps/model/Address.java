@@ -50,6 +50,7 @@ public class Address {
     @JsonBackReference("user-addresses")
     private User user;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private AddressType type;
 

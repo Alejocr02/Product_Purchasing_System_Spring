@@ -1,8 +1,12 @@
 package co.edu.cesde.pps.config;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-public class DatabaseConfig {
-    private static final Logger log = LoggerFactory.getLogger(DatabaseConfig.class);
+
+/**
+ * LEGACY: esta clase queda solo como referencia historica.
+ *
+ * Spring Boot + application.yml reemplaza toda esta configuracion.
+ */
+public final class DatabaseConfig {
+    private static final String LEGACY_MESSAGE = "DatabaseConfig is legacy and must not be used in the Spring Boot runtime";
     private static final String DEFAULT_DB_HOST = "localhost";
     private static final String DEFAULT_DB_PORT = "3306";
     private static final String DEFAULT_DB_NAME = "pps_db";
@@ -21,62 +25,33 @@ public class DatabaseConfig {
         throw new AssertionError("DatabaseConfig is a utility class and cannot be instantiated");
     }
     public static String getDbHost() {
-        String host = System.getenv().getOrDefault("DB_HOST", DEFAULT_DB_HOST);
-        if (System.getenv("DB_HOST") == null) {
-            log.debug("DB_HOST not set, using default: {}", DEFAULT_DB_HOST);
-        }
-        return host;
+        throw new UnsupportedOperationException(LEGACY_MESSAGE);
     }
     public static String getDbPort() {
-        String port = System.getenv().getOrDefault("DB_PORT", DEFAULT_DB_PORT);
-        if (System.getenv("DB_PORT") == null) {
-            log.debug("DB_PORT not set, using default: {}", DEFAULT_DB_PORT);
-        }
-        return port;
+        throw new UnsupportedOperationException(LEGACY_MESSAGE);
     }
     public static String getDbName() {
-        String dbName = System.getenv().getOrDefault("DB_NAME", DEFAULT_DB_NAME);
-        if (System.getenv("DB_NAME") == null) {
-            log.debug("DB_NAME not set, using default: {}", DEFAULT_DB_NAME);
-        }
-        return dbName;
+        throw new UnsupportedOperationException(LEGACY_MESSAGE);
     }
     public static String getDbUser() {
-        String user = System.getenv().getOrDefault("DB_USER", DEFAULT_DB_USER);
-        if (System.getenv("DB_USER") == null) {
-            log.debug("DB_USER not set, using default: {}", DEFAULT_DB_USER);
-        }
-        return user;
+        throw new UnsupportedOperationException(LEGACY_MESSAGE);
     }
     public static String getDbPassword() {
-        String password = System.getenv().getOrDefault("DB_PASSWORD", DEFAULT_DB_PASSWORD);
-        if (password.isEmpty()) {
-            log.warn("DB_PASSWORD is empty - not recommended for production");
-        }
-        return password;
+        throw new UnsupportedOperationException(LEGACY_MESSAGE);
     }
     public static int getPoolSize() {
-        String poolSizeStr = System.getenv().getOrDefault("DB_POOL_SIZE", String.valueOf(DEFAULT_POOL_SIZE));
-        try {
-            return Integer.parseInt(poolSizeStr);
-        } catch (NumberFormatException e) {
-            log.warn("Invalid DB_POOL_SIZE: {}, using default: {}", poolSizeStr, DEFAULT_POOL_SIZE);
-            return DEFAULT_POOL_SIZE;
-        }
+        throw new UnsupportedOperationException(LEGACY_MESSAGE);
     }
     public static String getJdbcUrl() {
-        String url = String.format("jdbc:mysql://%s:%s/%s?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true",
-                getDbHost(), getDbPort(), getDbName());
-        log.info("JDBC URL configured: {}", url);
-        return url;
+        throw new UnsupportedOperationException(LEGACY_MESSAGE);
     }
-    public static String getDriverClassName() { return "com.mysql.cj.jdbc.Driver"; }
-    public static String getHibernateDialect() { return DEFAULT_DIALECT; }
-    public static String getHibernateDdlAuto() { return DEFAULT_DDL_AUTO; }
-    public static boolean isShowSql() { return DEFAULT_SHOW_SQL; }
-    public static boolean isFormatSql() { return DEFAULT_FORMAT_SQL; }
-    public static boolean isUseSqlComments() { return DEFAULT_USE_SQL_COMMENTS; }
-    public static int getMinPoolSize() { return DEFAULT_MIN_POOL_SIZE; }
-    public static int getMaxPoolSize() { return DEFAULT_MAX_POOL_SIZE; }
-    public static int getIdleTimeout() { return DEFAULT_IDLE_TIMEOUT; }
+    public static String getDriverClassName() { throw new UnsupportedOperationException(LEGACY_MESSAGE); }
+    public static String getHibernateDialect() { throw new UnsupportedOperationException(LEGACY_MESSAGE); }
+    public static String getHibernateDdlAuto() { throw new UnsupportedOperationException(LEGACY_MESSAGE); }
+    public static boolean isShowSql() { throw new UnsupportedOperationException(LEGACY_MESSAGE); }
+    public static boolean isFormatSql() { throw new UnsupportedOperationException(LEGACY_MESSAGE); }
+    public static boolean isUseSqlComments() { throw new UnsupportedOperationException(LEGACY_MESSAGE); }
+    public static int getMinPoolSize() { throw new UnsupportedOperationException(LEGACY_MESSAGE); }
+    public static int getMaxPoolSize() { throw new UnsupportedOperationException(LEGACY_MESSAGE); }
+    public static int getIdleTimeout() { throw new UnsupportedOperationException(LEGACY_MESSAGE); }
 }

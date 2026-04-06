@@ -73,6 +73,7 @@ public class User {
     @Column(name = "phone", length = 20)
     private String phone;
 
+    @Enumerated(EnumType.STRING)
     @Builder.Default
     @Column(name = "status", nullable = false)
     private UserStatus status = UserStatus.ACTIVE;

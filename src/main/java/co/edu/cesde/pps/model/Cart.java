@@ -93,9 +93,10 @@ public class Cart {
     private User user; // Nullable - NULL para invitados
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id", nullable = false)
+    @JoinColumn(name = "session_id")
     private UserSession session;
 
+    @Enumerated(EnumType.STRING)
     @Builder.Default
     @Column (name = "status", nullable = false)
     private CartStatus status = CartStatus.OPEN;
@@ -109,7 +110,7 @@ public class Cart {
     private LocalDateTime updatedAt = LocalDateTime.now();
 
     // Colección para relación 1:N
-    @OneToMany(mappedBy = "cart", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "cart", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("cart-items")
     @Builder.Default
     private List<CartItem> items = new ArrayList<>();
