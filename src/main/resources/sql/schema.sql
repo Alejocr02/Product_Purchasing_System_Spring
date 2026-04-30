@@ -32,14 +32,14 @@ COLLATE utf8mb4_unicode_ci;
 -- - Al menos un carácter especial (@, !, #, $, etc.)
 
 -- Eliminar usuario si existe (para re-ejecución del script)
-DROP USER IF EXISTS 'user_pps'@'localhost';
+DROP USER IF EXISTS 'alejo'@'localhost';
 
--- Crear usuario con contraseña segura
--- NOTA: Cambiar 'YOUR_SECURE_PASSWORD' por la contraseña real
-CREATE USER 'user_pps'@'localhost' IDENTIFIED WITH mysql_native_password BY 'YOUR_SECURE_PASSWORD';
+-- Crear usuario de aplicación con la contraseña usada por defecto en el proyecto
+-- (nota: este script contiene la contraseña en texto claro; en producción use otra estrategia)
+CREATE USER 'alejo'@'localhost' IDENTIFIED WITH mysql_native_password BY 'alejo1234';
 
 -- Otorgar todos los privilegios sobre la base de datos pps_db
-GRANT ALL PRIVILEGES ON pps_db.* TO 'user_pps'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON pps_db.* TO 'alejo'@'localhost' WITH GRANT OPTION;
 
 -- Aplicar cambios de privilegios
 FLUSH PRIVILEGES;

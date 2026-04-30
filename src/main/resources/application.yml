@@ -3,8 +3,8 @@
       name: product-purchasing-system
     datasource:
       url: jdbc:mysql://${DB_HOST:localhost}:${DB_PORT:3306}/${DB_NAME:pps_db}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-      username: ${DB_USER:root}
-      password: ${DB_PASSWORD:}
+      username: ${DB_USER:alejo}
+      password: ${DB_PASSWORD:alejo1234}
       driver-class-name: com.mysql.cj.jdbc.Driver
       hikari:
         maximum-pool-size: ${DB_POOL_SIZE:10}
@@ -17,6 +17,7 @@
         hibernate:
           format_sql: true
           use_sql_comments: true
+          dialect: org.hibernate.dialect.MySQL8Dialect
     sql:
       init:
         mode: never
